@@ -58,9 +58,6 @@ AddEventHandler('vampire:executeDeath', function()
     -- Set health to 0
     SetEntityHealth(playerPed, 0)
     
-    -- Ensure player dies
-    NetworkExplodeVehicle(GetVehiclePedIsIn(playerPed, false), true, false, 0)
-    
     -- Stop screen effect after death
     Citizen.Wait(1000)
     StopScreenEffect(Config.ScreenEffect)
@@ -83,31 +80,45 @@ end)
 
 -- Alternative drunk animation system (fallback)
 function PlayDrunkAnimation(ped)
-    RequestAnimSet('move_m@drunk@verydrunk')
+    local animSet = 'move_m@drunk@verydrunk'
+    RequestAnimSet(animSet)
     
-    while not HasAnimSetLoaded('move_m@drunk@verydrunk') do
+    while not HasAnimSetLoaded(animSet) do
         Citizen.Wait(10)
     end
     
-    SetPedMovementClipset(ped, 'move_m@drunk@verydrunk', 1.0)
+    SetPedMovementClipset(ped, animSet, 1.0)
     
     -- Also play stumbling animation
-    RequestAnimDict('amb@world_human_bum_standing@drunk@idle_a')
+    local animDict = 'amb@world_human_bum_standing@drunk@idle_a'
+    RequestAnimDict(animDict)
     
-    while not HasAnimDictLoaded('amb@world_human_bum_standing@drunk@idle_a') do
+    while not HasAnimDictLoaded(animDict) do
         Citizen.Wait(10)
     end
     
-    TaskPlayAnim(ped, 'amb@world_human_bum_standing@drunk@idle_a', 'idle_a', 8.0, -8.0, -1, 1, 0, false, false, false)
+    TaskPlayAnim(ped, animDict, 'idle_a', 8.0, -8.0, -1, 1, 0, false, false, false)
+    
+    -- Cleanup after use
+    Citizen.SetTimeout(10000, function()
+        RemoveAnimSet(animSet)
+        RemoveAnimDict(animDict)
+    end)
 end
 
 -- Enhanced drunk effect with camera shake
 function ApplyDrunkEffect(ped)
+    local animSet = 'move_m@drunk@verydrunk'
+    
     -- Shake camera
     ShakeGameplayCam('DRUNK_SHAKE', 1.0)
     
-    -- Set drunk movement
-    SetPedMovementClipset(ped, 'move_m@drunk@verydrunk', 1.0)
+    -- Request and set drunk movement
+    RequestAnimSet(animSet)
+    while not HasAnimSetLoaded(animSet) do
+        Citizen.Wait(10)
+    end
+    SetPedMovementClipset(ped, animSet, 1.0)
     
     -- Set time scale to slow motion briefly
     Citizen.CreateThread(function()
@@ -115,23 +126,32 @@ function ApplyDrunkEffect(ped)
         Citizen.Wait(Config.AnimationDuration)
         ClearTimecycleModifier()
         StopGameplayCamShaking(true)
+        
+        -- Cleanup
+        RemoveAnimSet(animSet)
     end)
 end
 
 -- Visual particle effects (optional enhancement)
 function PlayVampireEffect(ped)
     local coords = GetEntityCoords(ped)
+    local ptfxAsset = 'core'
     
     -- Request particle effects
-    RequestNamedPtfxAsset('core')
+    RequestNamedPtfxAsset(ptfxAsset)
     
-    while not HasNamedPtfxAssetLoaded('core') do
+    while not HasNamedPtfxAssetLoaded(ptfxAsset) do
         Citizen.Wait(10)
     end
     
     -- Play blood effect
-    UseParticleFxAssetNextCall('core')
+    UseParticleFxAssetNextCall(ptfxAsset)
     StartParticleFxNonLoopedAtCoord('blood_stab', coords.x, coords.y, coords.z + 1.0, 0.0, 0.0, 0.0, 1.0, false, false, false)
+    
+    -- Cleanup after effect
+    Citizen.SetTimeout(5000, function()
+        RemoveNamedPtfxAsset(ptfxAsset)
+    end)
 end
 
 print('^2[Vampire System] ^7Client-side loaded successfully!^0')

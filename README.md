@@ -68,24 +68,35 @@ ensure meu-sistema-de-licencas
 ```
 meu-sistema-de-licencas/
 ├── fxmanifest.lua      # Manifesto do recurso
+├── config.lua          # Configurações centralizadas
 ├── server.lua          # Lógica servidor (verificações, morte)
 ├── client.lua          # Lógica cliente (animações, efeitos)
-├── licencas.json       # Configuração de licenças
+├── licencas.json       # Arquivo de licenças (opcional)
 └── README.md           # Este arquivo
 ```
 
 ## Configuração
 
-Você pode ajustar as configurações no `client.lua`:
+Você pode ajustar as configurações no `config.lua`:
 
 ```lua
-local Config = {
-    animationDuration = 5000,                    -- Duração da animação (ms)
-    drunkScenario = 'WORLD_HUMAN_DRUG_DEALER',  -- Cenário de animação
-    soundEffect = 'Bed',                        -- Efeito sonoro
-    soundSet = 'WastedSounds',                  -- Conjunto de sons
-    screenEffect = 'DeathFailOut',              -- Efeito de tela
-}
+-- Configurações de animação
+Config.AnimationDuration = 5000 -- Duração da animação em milissegundos (5 segundos)
+Config.DrunkScenario = 'WORLD_HUMAN_DRUG_DEALER' -- Cenário de animação de bêbado
+
+-- Configurações de som
+Config.SoundEffect = 'Bed' -- Nome do efeito sonoro
+Config.SoundSet = 'WastedSounds' -- Conjunto de sons
+
+-- Configurações de efeitos visuais
+Config.ScreenEffect = 'DeathFailOut' -- Efeito de tela
+
+-- Outras configurações disponíveis:
+-- - Config.UseCooldown: Habilita/desabilita cooldown
+-- - Config.CooldownTime: Tempo de cooldown em ms
+-- - Config.MaxDistance: Distância máxima para usar o poder
+-- - Config.UsePermissions: Habilita verificação de permissões ACE
+-- - Config.Notifications: Mensagens personalizadas
 ```
 
 ## Exemplos de Uso
