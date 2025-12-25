@@ -12,10 +12,10 @@ RegisterCommand('setvampiro', function(source, args, rawCommand)
     if targetId then
         vampiros[targetId] = true
         TriggerClientEvent('chat:addMessage', source, {
-            args = {'[Sistema]', 'Jogador ' .. targetId .. ' agora é um vampiro!'}
+            args = {'[Sistema]', string.format(Config.Notifications.SetVampire, targetId)}
         })
         TriggerClientEvent('chat:addMessage', targetId, {
-            args = {'[Sistema]', 'Você agora é um vampiro! Use /podervampiro [id] para usar seu poder.'}
+            args = {'[Sistema]', Config.Notifications.VampireStatus}
         })
     end
 end, false)
@@ -26,7 +26,7 @@ RegisterCommand('removevampiro', function(source, args, rawCommand)
     if targetId then
         vampiros[targetId] = false
         TriggerClientEvent('chat:addMessage', source, {
-            args = {'[Sistema]', 'Jogador ' .. targetId .. ' não é mais um vampiro!'}
+            args = {'[Sistema]', string.format(Config.Notifications.RemoveVampire, targetId)}
         })
     end
 end, false)
@@ -39,7 +39,7 @@ AddEventHandler('vampire:usePower', function(targetId)
     -- Verify if source is a vampire
     if not IsVampire(source) then
         TriggerClientEvent('chat:addMessage', source, {
-            args = {'[Sistema]', 'Você não é um vampiro!'}
+            args = {'[Sistema]', Config.Notifications.NotVampire}
         })
         return
     end
@@ -47,7 +47,7 @@ AddEventHandler('vampire:usePower', function(targetId)
     -- Verify if target exists and is online
     if not targetId or GetPlayerName(targetId) == nil then
         TriggerClientEvent('chat:addMessage', source, {
-            args = {'[Sistema]', 'Jogador não encontrado!'}
+            args = {'[Sistema]', Config.Notifications.PlayerNotFound}
         })
         return
     end
@@ -55,14 +55,14 @@ AddEventHandler('vampire:usePower', function(targetId)
     -- Verify if target is not the same player
     if source == targetId then
         TriggerClientEvent('chat:addMessage', source, {
-            args = {'[Sistema]', 'Você não pode usar o poder em si mesmo!'}
+            args = {'[Sistema]', Config.Notifications.CannotUseSelf}
         })
         return
     end
     
     -- Notify the vampire
     TriggerClientEvent('chat:addMessage', source, {
-        args = {'[Vampiro]', 'Poder usado em ' .. GetPlayerName(targetId) .. '!'}
+        args = {'[Vampiro]', string.format(Config.Notifications.PowerUsed, GetPlayerName(targetId))}
     })
     
     -- Trigger the power effect on the target (client-side)

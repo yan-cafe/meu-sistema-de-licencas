@@ -1,14 +1,5 @@
 -- Client-side script for Vampire Power System
 
--- Configuration
-local Config = {
-    animationDuration = 5000, -- Duration of drunk animation in milliseconds (5 seconds)
-    drunkScenario = 'WORLD_HUMAN_DRUG_DEALER', -- Scenario for drunk-like animation
-    soundEffect = 'Bed', -- Sound effect name
-    soundSet = 'WastedSounds', -- Sound set name
-    screenEffect = 'DeathFailOut', -- Screen effect
-}
-
 -- Command to use vampire power on target
 RegisterCommand('podervampiro', function(source, args, rawCommand)
     local targetId = tonumber(args[1])
@@ -30,14 +21,14 @@ AddEventHandler('vampire:applyPowerEffect', function(vampireId)
     local playerPed = PlayerPedId()
     
     -- Play sound effect
-    PlaySoundFrontend(-1, Config.soundEffect, Config.soundSet, true)
+    PlaySoundFrontend(-1, Config.SoundEffect, Config.SoundSet, true)
     
     -- Start screen effect
-    StartScreenEffect(Config.screenEffect, 0, true)
+    StartScreenEffect(Config.ScreenEffect, 0, true)
     
     -- Notify player
     TriggerEvent('chat:addMessage', {
-        args = {'[Vampiro]', 'Você foi atingido pelo poder do vampiro!'}
+        args = {'[Vampiro]', Config.Notifications.PowerReceived}
     })
     
     -- Freeze player controls
@@ -45,10 +36,10 @@ AddEventHandler('vampire:applyPowerEffect', function(vampireId)
     SetEntityInvincible(playerPed, true)
     
     -- Start drunk animation
-    TaskStartScenarioInPlace(playerPed, Config.drunkScenario, 0, true)
+    TaskStartScenarioInPlace(playerPed, Config.DrunkScenario, 0, true)
     
     -- Wait for animation duration
-    Citizen.Wait(Config.animationDuration)
+    Citizen.Wait(Config.AnimationDuration)
     
     -- Stop scenario and unfreeze
     ClearPedTasksImmediately(playerPed)
@@ -72,7 +63,7 @@ AddEventHandler('vampire:executeDeath', function()
     
     -- Stop screen effect after death
     Citizen.Wait(1000)
-    StopScreenEffect(Config.screenEffect)
+    StopScreenEffect(Config.ScreenEffect)
 end)
 
 -- Event to sync animation to nearby players
@@ -83,8 +74,8 @@ AddEventHandler('vampire:syncAnimation', function(targetId, vampireId)
     if targetPed and targetPed ~= PlayerPedId() then
         -- Play the drunk scenario on the target for other players
         Citizen.CreateThread(function()
-            TaskStartScenarioInPlace(targetPed, Config.drunkScenario, 0, true)
-            Citizen.Wait(Config.animationDuration)
+            TaskStartScenarioInPlace(targetPed, Config.DrunkScenario, 0, true)
+            Citizen.Wait(Config.AnimationDuration)
             ClearPedTasksImmediately(targetPed)
         end)
     end
@@ -121,7 +112,7 @@ function ApplyDrunkEffect(ped)
     -- Set time scale to slow motion briefly
     Citizen.CreateThread(function()
         SetTimecycleModifier('spectator5')
-        Citizen.Wait(Config.animationDuration)
+        Citizen.Wait(Config.AnimationDuration)
         ClearTimecycleModifier()
         StopGameplayCamShaking(true)
     end)
