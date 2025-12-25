@@ -18,49 +18,53 @@ end, false)
 -- Event when vampire power is applied to this player (victim)
 RegisterNetEvent('vampire:applyPowerEffect')
 AddEventHandler('vampire:applyPowerEffect', function(vampireId)
-    local playerPed = PlayerPedId()
-    
-    -- Play sound effect
-    PlaySoundFrontend(-1, Config.SoundEffect, Config.SoundSet, true)
-    
-    -- Start screen effect
-    StartScreenEffect(Config.ScreenEffect, 0, true)
-    
-    -- Notify player
-    TriggerEvent('chat:addMessage', {
-        args = {'[Vampiro]', Config.Notifications.PowerReceived}
-    })
-    
-    -- Freeze player controls
-    FreezeEntityPosition(playerPed, true)
-    SetEntityInvincible(playerPed, true)
-    
-    -- Start drunk animation
-    TaskStartScenarioInPlace(playerPed, Config.DrunkScenario, 0, true)
-    
-    -- Wait for animation duration
-    Citizen.Wait(Config.AnimationDuration)
-    
-    -- Stop scenario and unfreeze
-    ClearPedTasksImmediately(playerPed)
-    FreezeEntityPosition(playerPed, false)
-    SetEntityInvincible(playerPed, false)
-    
-    -- Request death from server
-    TriggerServerEvent('vampire:killTarget')
+    Citizen.CreateThread(function()
+        local playerPed = PlayerPedId()
+        
+        -- Play sound effect
+        PlaySoundFrontend(-1, Config.SoundEffect, Config.SoundSet, true)
+        
+        -- Start screen effect
+        StartScreenEffect(Config.ScreenEffect, 0, true)
+        
+        -- Notify player
+        TriggerEvent('chat:addMessage', {
+            args = {'[Vampiro]', Config.Notifications.PowerReceived}
+        })
+        
+        -- Freeze player controls
+        FreezeEntityPosition(playerPed, true)
+        SetEntityInvincible(playerPed, true)
+        
+        -- Start drunk animation
+        TaskStartScenarioInPlace(playerPed, Config.DrunkScenario, 0, true)
+        
+        -- Wait for animation duration
+        Citizen.Wait(Config.AnimationDuration)
+        
+        -- Stop scenario and unfreeze
+        ClearPedTasksImmediately(playerPed)
+        FreezeEntityPosition(playerPed, false)
+        SetEntityInvincible(playerPed, false)
+        
+        -- Request death from server
+        TriggerServerEvent('vampire:killTarget')
+    end)
 end)
 
 -- Event to execute death
 RegisterNetEvent('vampire:executeDeath')
 AddEventHandler('vampire:executeDeath', function()
-    local playerPed = PlayerPedId()
-    
-    -- Set health to 0
-    SetEntityHealth(playerPed, 0)
-    
-    -- Stop screen effect after death
-    Citizen.Wait(1000)
-    StopScreenEffect(Config.ScreenEffect)
+    Citizen.CreateThread(function()
+        local playerPed = PlayerPedId()
+        
+        -- Set health to 0
+        SetEntityHealth(playerPed, 0)
+        
+        -- Stop screen effect after death
+        Citizen.Wait(1000)
+        StopScreenEffect(Config.ScreenEffect)
+    end)
 end)
 
 -- Event to sync animation to nearby players
@@ -77,6 +81,10 @@ AddEventHandler('vampire:syncAnimation', function(targetId, vampireId)
         end)
     end
 end)
+
+-- ===== Optional Enhancement Functions =====
+-- These functions are available for advanced users who want to enhance the vampire power effect
+-- They are not used by default but can be integrated into the main power effect if desired
 
 -- Alternative drunk animation system (fallback)
 function PlayDrunkAnimation(ped)

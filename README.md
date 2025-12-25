@@ -71,8 +71,9 @@ meu-sistema-de-licencas/
 ├── config.lua          # Configurações centralizadas
 ├── server.lua          # Lógica servidor (verificações, morte)
 ├── client.lua          # Lógica cliente (animações, efeitos)
-├── licencas.json       # Arquivo de licenças (opcional)
 └── README.md           # Este arquivo
+
+Nota: O arquivo `licencas.json` é do repositório original e não é utilizado por este sistema.
 ```
 
 ## Configuração

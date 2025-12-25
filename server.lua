@@ -34,8 +34,6 @@ end, false)
 -- Event triggered when vampire uses power on target
 RegisterServerEvent('vampire:usePower')
 AddEventHandler('vampire:usePower', function(targetId)
-    local source = source
-    
     -- Verify if source is a vampire
     if not IsVampire(source) then
         TriggerClientEvent('chat:addMessage', source, {
@@ -75,15 +73,12 @@ end)
 -- Event to trigger death after animation
 RegisterServerEvent('vampire:killTarget')
 AddEventHandler('vampire:killTarget', function()
-    local source = source
-    
     -- Set player health to 0 (death)
     TriggerClientEvent('vampire:executeDeath', source)
 end)
 
 -- Clean up vampire status when player disconnects
 AddEventHandler('playerDropped', function(reason)
-    local source = source
     if vampiros[source] then
         vampiros[source] = nil
     end
