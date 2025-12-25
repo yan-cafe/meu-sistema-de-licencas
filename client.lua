@@ -98,12 +98,6 @@ function PlayDrunkAnimation(ped)
     end
     
     TaskPlayAnim(ped, animDict, 'idle_a', 8.0, -8.0, -1, 1, 0, false, false, false)
-    
-    -- Cleanup after use
-    Citizen.SetTimeout(10000, function()
-        RemoveAnimSet(animSet)
-        RemoveAnimDict(animDict)
-    end)
 end
 
 -- Enhanced drunk effect with camera shake
@@ -126,9 +120,6 @@ function ApplyDrunkEffect(ped)
         Citizen.Wait(Config.AnimationDuration)
         ClearTimecycleModifier()
         StopGameplayCamShaking(true)
-        
-        -- Cleanup
-        RemoveAnimSet(animSet)
     end)
 end
 
@@ -147,11 +138,6 @@ function PlayVampireEffect(ped)
     -- Play blood effect
     UseParticleFxAssetNextCall(ptfxAsset)
     StartParticleFxNonLoopedAtCoord('blood_stab', coords.x, coords.y, coords.z + 1.0, 0.0, 0.0, 0.0, 1.0, false, false, false)
-    
-    -- Cleanup after effect
-    Citizen.SetTimeout(5000, function()
-        RemoveNamedPtfxAsset(ptfxAsset)
-    end)
 end
 
 print('^2[Vampire System] ^7Client-side loaded successfully!^0')

@@ -24,7 +24,7 @@ end, false)
 RegisterCommand('removevampiro', function(source, args, rawCommand)
     local targetId = tonumber(args[1])
     if targetId then
-        vampiros[targetId] = false
+        vampiros[targetId] = nil
         TriggerClientEvent('chat:addMessage', source, {
             args = {'[Sistema]', string.format(Config.Notifications.RemoveVampire, targetId)}
         })
